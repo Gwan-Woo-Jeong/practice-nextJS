@@ -35,3 +35,69 @@ JS와 React가 로딩되지 않은 상태이더라도, NextJS는 React의 초기
 ### SEO (검색 최적화)
 
 SSR은 HTML 문서가 작성된 상태로 서버로부터 받기 때문에, 컨텐츠를 검색하는데 CSR보다 훨씬 유리하다.
+
+## Routing
+
+NextJS에서 네비게이션을 위해 anchor 태그를 사용하면 안된다. 앱이 새로고침 되기 때문에 속도가 굉장히 느리다. </br>
+NextJS는 페이지를 이동할 때 사용하는 Link 컴포넌트를 제공한다. Link 컴포넌트에 이동할 route를 명시해준다. 컴포넌트 자체가 a태그를 렌더링하지만 className이나 스타일을 주기 위해선 a태그를 사용해야한다.
+
+```js
+<Link href="/">
+  <a className="home">Home</a>
+</Link>
+```
+
+</br>
+추가로, useRouter hook를 사용하여 location에 대한 정보를 불러올 수 있다.
+
+## CSS Modules
+
+`.modules.css` 패턴으로 CSS 파일 생성한 후, 해당 파일을 자바스크립트 객체로 `import`한다.
+
+```js
+import styles from "./NavBar.module.css";
+```
+
+CSS 모듈 패턴을 사용하기 때문에,
+classname을 문자가 아닌 자바스크립트 객체에서 프로퍼티 형식으로 적어준다.
+
+```js
+<a style={styles.nav} className="home">
+  Home
+</a>
+```
+
+그러면 NextJS는 빌드 시, className을 무작위의 문자로 변경해주기 때문에 클래스명이 충돌을 방지한다.
+
+### 조건부 스타일 적용하기
+
+useRouter hook과 CSS 모듈을 사용하여 조건부로 스타일을 적용해보자.
+
+```js
+<a className={router.pathname === "/about" && styles.active}>About</a>
+```
+
+이런식으로 location에 따라 클래스명을 변경하여 다른 스타일을 줄 수 있다.
+
+### 또 다른 스타일 추가하기
+
+위의 조건부 클래스명과 함께 또 다른 일반적인 클래스명을 추가해보자.
+백틱을 사용하여 두 개의 클래스명을 적어주면 된다.
+
+```js
+<a
+  className={`${styles.link} ${router.pathname === "/about" && styles.active}`}
+>
+  About
+</a>
+```
+
+또 다른 방법으로, 두 클래스명을 배열에 할당한 후 `join` 메소드를 사용하여 문자열로 변환시키는 방법이 있다.
+
+```js
+<a
+  className={[styles.link, router.pathname === "/" && styles.active].join(" ")}
+>
+  Home
+</a>
+```
