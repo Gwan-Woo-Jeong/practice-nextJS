@@ -101,3 +101,63 @@ useRouter hook과 CSS 모듈을 사용하여 조건부로 스타일을 적용해
   Home
 </a>
 ```
+
+## Styles JSX
+
+컴포넌트 내에서 style HTML 태그를 사용하여 스타일링이 가능하다. [공식 문서](https://nextjs.org/docs/basic-features/built-in-css-support#css-in-js)에 따르면, 이 방식을 `styled-jsx`라고 하는데 개별 컴포넌트에 대한 스타일링을 제공한다.
+
+```js
+<style jsx>{`
+  nav {
+    background-color: tomato;
+  }
+  ...
+`}</style>
+```
+
+CSS가 개별 컴포넌트에 적용되기 때문에, 클래스명이 다른 컴포넌트와 중복되어도 무방하다. 이 방법은 편리하지만, 서버 사이드 렌더링을 지원하지 않는다.
+
+템플릿 리터럴로 스트링을 삽입하는 방식이기 때문에, 조건부 스타일링과 prop 사용이 직관적이다.
+
+```js
+<Link href="/about">
+        <a className={router.pathname === "/about" && "active"}>About</a>
+      </Link>
+      <style jsx>{`
+      ...
+        a {
+          text-decoration: none;
+        }
+        .active {
+          color: yellow;
+          background-color: ${props.color};
+        }
+      `}</style>
+```
+
+## Custom App
+
+NextJS의 App 컴포넌트는 모든 컴포넌트의 기본 템플릿이라고 할 수 있다. 파일명은 꼭 `_app.js`로 만들어야 한다.
+
+다음과 같이, App 컴포넌트로 모든 컴포넌트의 글로벌 스타일링과 컴포넌트 렌더링을 제어할 수 있다.
+
+```js
+import "../styles/globals.css";
+
+export default function App({ Component, pageProps }) {
+  return (
+    <>
+      <NavBar />
+      <Component {...pageProps} />
+      <style jsx global>{`
+        a {
+          background-color: white;
+        }
+      `}</style>
+    </>
+  );
+```
+
+여기에서 `<Component {...pageProps} />`는 라우터로 렌더링 된 페이지의 컴포넌트를 나타낸다. Component 전후로, 다른 컴포넌트나 style 태그를 사용하여 모든 페이지의 제어가 가능하다.
+
+글로벌 CSS 간 충돌을 막기 위해서, `.modules.css` 형태의 CSS 파일을 제외한 나머지 CSS 파일들은 `_app.js`에서만 사용해야한다.
