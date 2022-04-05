@@ -29,3 +29,18 @@ NextJS에서는 React Helmet과 같이 탭의 제목을 변경할 수 있는 컴
 
 Rewrites를 사용하면 들어오는 요청 URL를 다른 destination 경로에 매핑할 수 있다.
 Rewrites은 URL 프록시 역할 (중개기)을 하고 destination 경로를 마스킹하여 사용자가 사이트에서 리다이렉션을 하지 않은 것처럼 보이게 한다. 반대로 Redirects은 새 페이지로 다시 라우팅하고 URL 변경 사항을 표시한다.
+
+## Server Side Rendering
+
+### getServerSideProps function
+
+`getServerSideProps`는 서버 측에서 HTML 렌더링을 해주는 함수다. 해당 함수를 `exports` 하면 함수에서 리턴한 데이터를 사용하여 페이지를 pre-render한다. 함수는 서버 측에서만 실행되며, 브라우저에서 실행하지 않는다. 
+
+```js
+export async function getServerSideProps {
+    const { result } = await ...;
+    return { props : { result }};
+}
+```
+
+여기에서 리턴한 데이터를 컴포넌트의 `props`로 전달받아 사용 가능하다.

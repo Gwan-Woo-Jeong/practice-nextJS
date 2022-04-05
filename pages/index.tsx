@@ -1,45 +1,29 @@
-import Image from "next/image";
-import { useEffect, useState } from "react";
+import { GetServerSideProps, InferGetServerSidePropsType } from "next";
 import HeadTitle from "../components/HeadTitle";
 
-type movie = {
+type IMovieProps = {
   id: number;
+  backdrop_path: string;
   original_title: string;
+  overview: string;
   poster_path: string;
+  title: string;
+  vote_average: number;
+  genre_ids: [number];
 };
 
-const API_KEY = process.env.API_KEY;
-
-export default function Home() {
-  const [movies, setMovies] = useState<movie[]>([]);
-
-  useEffect(() => {
-    (async () => {
-      const { results } = await (
-        await fetch(
-          `https://api.themoviedb.org/3/movie/popular?api_key=${API_KEY}`
-        )
-      ).json();
-      setMovies(results);
-    })();
-  }, []);
-
+export default function Home({
+  results,
+}: InferGetServerSidePropsType<GetServerSideProps>) {
   return (
     <div className="container">
       <HeadTitle title="Home" />
-      {movies ? (
-        movies.map((movie) => (
-          <div className="movie" key={movie.id}>
-            <Image
-              alt="poster"
-              src={`https://image.tmdb.org/t/p/w500/${movie.poster_path}`}
-            />
-            <h4>{movie.original_title}</h4>
-          </div>
-        ))
-      ) : (
-        <h4>Loading...</h4>
-      )}
+      {results.map((movie: IMovieProps) => (
+        <div className="movie" key={movie.id}>
+          <img src={`https://image.tmdb.org/t/p/w500/${movie.poster_path}`} />
+          <h4>{movie.original_title}</h4>
+        </div>
+      ))}
       <style jsx>{`
         .container {
           display: grid;
@@ -63,4 +47,15 @@ export default function Home() {
       `}</style>
     </div>
   );
+}
+
+export async function getServerSideProps({}: GetServerSideProps) {
+  const { results } = await (
+    await fetch(`http://localhost:3000/api/movies`)
+  ).json();
+  return {
+    props: {
+      results,
+    },
+  };
 }
